@@ -16,8 +16,8 @@
 // static const uint8_t D9   = 3;
 // static const uint8_t D10  = 1;
 
-#define PIN_SDA             0
-#define PIN_SCL             2
+#define PIN_SDA             2
+#define PIN_SCL             0
 
 
 void LCD_Init(void);

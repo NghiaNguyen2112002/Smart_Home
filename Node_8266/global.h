@@ -7,8 +7,14 @@
 #include <ArduinoJson.h>
 #include <espnow.h>
 
-#define NO_OF_NODE_SENSOR             3
+#define NODE_ID             1
 
+
+typedef struct Struct_Command{
+  unsigned char node_id;
+  unsigned char actuator_index;
+  unsigned char value;
+} Struct_Command;
 
 
 typedef struct Struct_Data_Node{
@@ -26,12 +32,14 @@ extern WiFiClient espClient;
 // Create a struct
 extern Struct_Data_Node _data_node; 
 
-
+// Command receive from gateway
+extern Struct_Command _command;
 
 // REPLACE WITH THE MAC Address of your receiver 
 extern uint8_t Broadcast_Address[];
 
-
+// flag for triggering evnents
+extern bool _flag_receive_command;
 
 
 #endif

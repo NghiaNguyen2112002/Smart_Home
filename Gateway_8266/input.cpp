@@ -6,6 +6,7 @@ float temp, humid;
 
 void IN_Init(void){
   dht.begin();
+  pinMode(CONFIG_PIN, INPUT_PULLUP);
   pinMode(ADC_PIN, INPUT);
 }
 
@@ -17,7 +18,7 @@ float IN_ReadHumid(void){
     return 0;
   }
 
-  Serial.print("HUMI: "); Serial.println(humid);
+  // Serial.print("HUMI: "); Serial.println(humid);
   return humid;
 }
 
@@ -29,10 +30,13 @@ float IN_ReadTemp(void){
     return 0;
   }
 
-  Serial.print("TEMP: "); Serial.println(temp); 
+  // Serial.print("TEMP: "); Serial.println(temp); 
   return temp;
 }
 
 unsigned char IN_ReadLight(void){
   return analogRead(ADC_PIN);
+}
+bool IN_IsConfigButtonPressed(void){
+  return digitalRead(CONFIG_PIN);
 }

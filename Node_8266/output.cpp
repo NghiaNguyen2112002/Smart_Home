@@ -18,11 +18,13 @@ bool OUT_IsRelayOn(unsigned char index){
 void OUT_TurnRelayOn(unsigned char index){
   digitalWrite(Pin_Relay[index], 1);
   Relay_State[index] = true;
+  Serial.print("Turn relay:"); Serial.print(index); Serial.println("ON");
 }
 
 void OUT_TurnRelayOff(unsigned char index){
   digitalWrite(Pin_Relay[index], 0);
   Relay_State[index] = false;
+  Serial.print("Turn relay:"); Serial.print(index); Serial.println("OFF");
 }
 
 void OUT_TuggleRelay(unsigned char index){

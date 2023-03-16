@@ -1,6 +1,5 @@
 #include "MQTT_server.h"
 
-
 void on_message(const char* topic, byte* payload, unsigned int length);
 
 void SV_Init(void){
@@ -8,25 +7,24 @@ void SV_Init(void){
   client.setCallback(on_message);
 }
 
-void SV_CheckConnection(void){
+void SV_Connect(void){
     if ( !client.connected() ) {
       Serial.print("Connecting to Server ...");
       if ( client.connect(CLIENT_ID, SERVER_USER, SERVER_PASS) ) {
         Serial.println( "[DONE]" );
 
         // Subscribing channel
-        client.subscribe("channels/2064615");
-
-        // client.subscribe(CHANNEL_STORE_DATA);
+        client.subscribe(CHANNEL_COMMAND);
       } 
       else {
         Serial.print( "[FAILED] [ rc = " );
-        Serial.print( client.state() );
-        Serial.println( " : retrying in 5 seconds]" );
-        // Wait 5 seconds before retrying
-        delay(5000);
+        Serial.println( client.state() );
       }
     }
+}
+
+bool SV_IsConnected(void){
+  return client.connected();
 }
 
 void SV_SendData(char* channel, char* json_string){
@@ -37,14 +35,21 @@ void SV_SendData(char* channel, char* json_string){
 
 // The callback for when a PUBLISH message is received from the server.
 void on_message(const char* topic, byte* payload, unsigned int length) {
-  Serial.println("On message");
   char json[length + 1];
   strncpy (json, (char*)payload, length);
-  json[length] = '\0';
+  
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject& data = jsonBuffer.parseObject(json);
+
+  _command.node_id = data["node_id"];
+  _command.actuator_index = data["actuator_index"];
+  _command.value = data["value"];
+
+  _flag_send_data_node = true;
 
   Serial.print("Topic: ");
   Serial.println(topic);
   Serial.print("Message: ");
-  Serial.println(json);
+  Serial.println(String(json));
 
 }

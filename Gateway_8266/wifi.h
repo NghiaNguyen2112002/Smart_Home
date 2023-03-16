@@ -3,6 +3,10 @@
 
 
 #include <ESP8266WiFi.h>
+#include <DNSServer.h>
+#include <WiFiClient.h>
+#include <EEPROM.h>
+#include <ESP8266WebServer.h>
 #include <espnow.h>
 
 #include "global.h"
@@ -17,7 +21,8 @@
 #define TIME_CHECK_WF       300       //3s
 
 void WF_Init(void);
-void WF_CheckConnection(void);
+bool WF_IsConnected(void);
+void WF_Connect(void);
 void WF_SendDataEspnow(char* address_node, char* data);
 
 

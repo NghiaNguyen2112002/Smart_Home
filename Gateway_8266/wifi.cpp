@@ -34,29 +34,26 @@ void WF_Init(void){
   esp_now_register_recv_cb(OnDataRecv);
 
   // Register peer
-  esp_now_add_peer(Broadcast_Address_1, ESP_NOW_ROLE_COMBO, 1, NULL, 0);
-  esp_now_add_peer(Broadcast_Address_2, ESP_NOW_ROLE_COMBO, 1, NULL, 0);
-
-
-}
-
-
-void Reconnect() {
-  // Loop until we're reconnected
-  status = WiFi.status();
-  if ( status != WL_CONNECTED) {
-    WiFi.begin(WIFI_NAME, WIFI_PASSWORD);
-    while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
-    }
-    Serial.println("Connected to AP");
+  for(int i = 0; i < NO_OF_NODE_SENSOR - 1; i++){
+    esp_now_add_peer(Broadcast_Address[i], ESP_NOW_ROLE_COMBO, 1, NULL, 0);
   }
+  
 }
 
-void WF_CheckConnection(){
+bool WF_IsConnected(void){
+  return WiFi.status() == WL_CONNECTED;
+}
+void WF_Connect(void){
   if (WiFi.status() != WL_CONNECTED) {
-    Reconnect();
+    status = WiFi.status();
+    if ( status != WL_CONNECTED) {
+      WiFi.begin(WIFI_NAME, WIFI_PASSWORD);
+      while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+      }
+      Serial.println("Connected to AP");
+    }
   }
 }
 
@@ -70,13 +67,10 @@ void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus){
     Serial.println("Delivery fail");
   }
 }
+
 void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len){
     memcpy(&_data_node, incomingData, sizeof(_data_node));
 
-    if(node_turn_for_lcd_display == _data_node.node_id) {
-        memcpy(&_data_lcd_buffer, &_data_node, sizeof(_data_lcd_buffer));
-    }
-
-    // SV_SendData(char *channel, char *json_string)
+    _flag_send_data_sv = true;
 }
 

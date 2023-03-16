@@ -6,6 +6,7 @@
 #include <espnow.h>
 
 #include "global.h"
+#include "output.h"
 
 #define WIFI_NAME                 "GATEWAY"
 #define WIFI_PASSWORD             "123456789"

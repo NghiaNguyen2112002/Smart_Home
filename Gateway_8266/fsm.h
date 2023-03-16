@@ -1,11 +1,15 @@
 #ifndef __INC_FSM_H__
 #define __INC_FSM_H__
 
-
+#include <Arduino_JSON.h>
 #include <ESP8266WiFi.h>
+// #include <espnow.h>
 
 #include "global.h"
 #include "lcd.h"
+#include "wifi.h"
+#include "MQTT_server.h"
+#include "input.h"
 
 //=============MODE FSM LCD============//
 #define INIT              0
@@ -14,6 +18,13 @@
 #define DISPLAY_RELAY     3
 #define DISPLAY_WF_CONF   4
 #define TURN_NEXT_NODE    5
+
+//=============MODE FSM DATA============//
+// #define INIT                 0
+#define CHECK_CONNECTION        1
+#define READ_DATA_GATEWAY       2
+#define TRANSFER_DATA           3
+#define DATA_LCD_BUFFER         4
 
 //=============LCD SCREEN=============//
 #define SCREEN_INIT_0                   "   SMART HOME   "
@@ -36,6 +47,7 @@
 
 //==============TIME==================//
 #define SCREEN_TIME                 300         //3000 ms for every screen
+#define FSM_DATA_CONTROL_TIME       100         //1000 ms
 
 //===========INDEX ON LCD============//
 #define INDEX_CEL_SYMBOL            14
@@ -47,6 +59,6 @@
 
 void FSM_Init(void);
 void FSM_LcdControl(void);
-
+void FSM_DataControl(void);
 
 #endif

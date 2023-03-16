@@ -1,15 +1,34 @@
 #include "fsm.h"
 
 unsigned char mode_lcd;
-
+unsigned char mode_data;
 
 
 void FSM_Init(void){
   mode_lcd = INIT;
-  node_turn_for_lcd_display = 1;
+  mode_data = INIT;
+  node_turn_for_lcd_display = 0;
   _display_time = SCREEN_TIME;
 }
 
+String ConvertDataToJsonString(void){
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject& data = jsonBuffer.createObject();
+  data["ID"] = _data_node.node_id;
+  data["TEMP"] = _data_node.temp;
+  data["HUMID"] = _data_node.humid;
+  data["LIGHT"] = _data_node.light_intensity;
+  data["RELAY_0"] = _data_node.status_relay_0;
+  data["RELAY_1"] = _data_node.status_relay_1;
+
+  char payload[256];
+  data.printTo(payload, sizeof(payload));
+
+  String json_string = String(payload);
+  Serial.println(json_string);
+
+  return json_string; 
+}
 
 void FSM_LcdControl(void){
   switch(mode_lcd){
@@ -67,7 +86,7 @@ void FSM_LcdControl(void){
       }
     break;
     case TURN_NEXT_NODE:
-      // node_turn_for_lcd_display = (node_turn_for_lcd_display + 1) % NO_OF_NODE_SENSOR;
+      node_turn_for_lcd_display = (node_turn_for_lcd_display + 1) % NO_OF_NODE_SENSOR;
       
 
       LCD_PrintStringBuffer(0, 0, SCREEN_HUMID_TEMP_0);
@@ -83,6 +102,59 @@ void FSM_LcdControl(void){
     break;
     default: 
       mode_lcd = INIT;
+    break;
+  }
+}
+
+void FSM_DataControl(void){
+  switch(mode_data){
+    case INIT:
+    case READ_DATA_GATEWAY: 
+      _data_node.node_id = 0;
+      _data_node.humid = IN_ReadHumid();
+      _data_node.temp = IN_ReadTemp();
+      // _data_node.light_intensity = IN_ReadLight();
+
+      // gateway does not have relays
+      _data_node.status_relay_0 = false;
+      _data_node.status_relay_1 = false;
+
+      _flag_send_data_sv = true;
+
+      if(WF_IsConnected() && SV_IsConnected()) mode_data = TRANSFER_DATA;
+      else mode_data = CHECK_CONNECTION;
+    break;
+    case CHECK_CONNECTION:
+      if(!WF_IsConnected()) WF_Connect();
+      if(!SV_IsConnected()) SV_Connect();
+
+      if(WF_IsConnected() && SV_IsConnected()) mode_data = TRANSFER_DATA;
+    break;
+    case TRANSFER_DATA:
+      if(_flag_send_data_sv) {
+        _flag_send_data_sv = false;
+      // send data to server
+        SV_SendData(CHANNEL_DATA, (char*)ConvertDataToJsonString().c_str());
+
+      // data to lcd_data_buffer
+        if(node_turn_for_lcd_display == _data_node.node_id) {
+            memcpy(&_data_lcd_buffer, &_data_node, sizeof(_data_lcd_buffer));
+        }
+      }
+      
+      if(_flag_send_data_node){
+        _flag_send_data_node = false;
+      // when receive command from server, gateway send to node through espnow
+        esp_now_send(Broadcast_Address[_command.node_id - 1], (uint8_t*) &_command, sizeof(_command));
+      }
+
+      if(_time_call_FSM_data < 5){
+        _time_call_FSM_data = FSM_DATA_CONTROL_TIME;
+        mode_data = READ_DATA_GATEWAY;
+      } 
+    break;
+    default: 
+      mode_data = INIT;
     break;
   }
 }
