@@ -1,13 +1,16 @@
 #include "input.h"
 
+unsigned char BUTTON_PIN[] = {SW1_PIN, SW2_PIN};
+
 DHT dht(DHT_PIN, DHTTYPE);     // Initialize DHT sensor
 
 float temp, humid;
 
 void IN_Init(void){
   dht.begin();
-  pinMode(CONFIG_PIN, INPUT_PULLUP);
   pinMode(ADC_PIN, INPUT);
+  pinMode(SW1_PIN, INPUT);
+  pinMode(SW2_PIN, INPUT);
 }
 
 float IN_ReadHumid(void){
@@ -37,6 +40,7 @@ float IN_ReadTemp(void){
 unsigned char IN_ReadLight(void){
   return analogRead(ADC_PIN);
 }
-bool IN_IsConfigButtonPressed(void){
-  return digitalRead(CONFIG_PIN);
+
+unsigned char IN_IsPress(unsigned char index){
+  return digitalRead(BUTTON_PIN[index]);
 }

@@ -27,6 +27,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   if(timer1_flag){
     timer1_flag = 0;
+
     FSM_DataProcessing();
   }
 }

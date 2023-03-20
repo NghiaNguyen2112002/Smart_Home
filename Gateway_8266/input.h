@@ -5,14 +5,14 @@
 
 
 #define DHTTYPE       DHT11 // DHT 11
-#define DHT_PIN       13
+#define DHT_PIN       D6
 #define ADC_PIN       A0
-#define CONFIG_PIN    15    
+#define SW1_PIN       D8
+#define SW2_PIN       D7    
 
 void IN_Init(void);
 float IN_ReadHumid(void);
 float IN_ReadTemp(void);
 unsigned char IN_ReadLight(void);
-bool IN_IsConfigButtonPressed(void);
-
+unsigned char IN_IsPress(unsigned char index);
 #endif

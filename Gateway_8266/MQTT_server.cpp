@@ -41,9 +41,9 @@ void on_message(const char* topic, byte* payload, unsigned int length) {
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject& data = jsonBuffer.parseObject(json);
 
-  _command.node_id = data["node_id"];
-  _command.actuator_index = data["actuator_index"];
-  _command.value = data["value"];
+  _command.node_id = data["ID"];
+  _command.actuator_index = data["RELAY"];
+  _command.value = data["VALUE"];
 
   _flag_send_data_node = true;
 

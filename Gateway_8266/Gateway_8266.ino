@@ -31,7 +31,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   if(timer1_flag){
     timer1_flag = 0;
- 
+
     if(_display_time >= 5) _display_time -= 5;
     if(_time_call_FSM_data >= 5) _time_call_FSM_data -= 5;
 

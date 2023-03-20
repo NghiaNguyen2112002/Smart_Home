@@ -18,8 +18,8 @@
 // static const uint8_t D10  = 1;
 
 #define NO_OF_RELAYS                      2
-#define PIN_RELAY_1                       14
-#define PIN_RELAY_2                       12
+#define PIN_RELAY_1                       D3
+#define PIN_RELAY_2                       D4
 
 
 void OUT_Init(void);
