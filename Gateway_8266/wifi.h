@@ -22,8 +22,9 @@
 
 void WF_Init(void);
 bool WF_IsConnected(void);
-void WF_Connect(void);
+void WF_Connect(String wifi_name, String wifi_pass);
+void WF_Disconnect(void);
 void WF_SendDataEspnow(char* address_node, char* data);
-
+void WF_CreateWebserver(void);
 
 #endif

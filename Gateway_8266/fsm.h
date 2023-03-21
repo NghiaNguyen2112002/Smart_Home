@@ -12,12 +12,14 @@
 #include "input.h"
 
 //=============MODE FSM LCD============//
-#define INIT              0
-#define DISPLAY_DHT       1
-#define DISPLAY_LIGHT     2
-#define DISPLAY_RELAY     3
-#define DISPLAY_WF_CONF   4
-#define TURN_NEXT_NODE    5
+#define INIT                        0
+#define DISPLAY_DHT                 1
+#define DISPLAY_LIGHT               2
+#define DISPLAY_RELAY               3
+#define DISPLAY_WIFI_STATE          4
+#define DISPLAY_WF_CONF             5
+#define TURN_NEXT_NODE              6
+
 
 //=============MODE FSM DATA============//
 // #define INIT                 0
@@ -25,6 +27,13 @@
 #define READ_DATA_GATEWAY       2
 #define TRANSFER_DATA           3
 #define DATA_LCD_BUFFER         4
+
+
+//=============MODE FSM WIFI============//
+// #define INIT                 0
+#define WIFI_CHECKCONNECTION    1
+#define WIFI_CONFIG             2
+
 
 //=============LCD SCREEN=============//
 #define SCREEN_INIT_0                   "   SMART HOME   "
@@ -41,6 +50,11 @@
 
 #define SCREEN_CONFIG_WIFI_0            "  CONFIG  WIFI  "
 #define SCREEN_CONFIG_WIFI_1            "                "   
+
+#define SCREEN_WIFI_CONNECTING_0        "WIFI  CONNECTING"
+#define SCREEN_WIFI_CONNECTING_1        "                "
+
+// #define SCREEN_WIFI_CONNECTED           " WIFI CONNECTED "
 
 #define LCD_RELAY_STATE_ON                  "ON "
 #define LCD_RELAY_STATE_OFF                 "OFF"
@@ -60,5 +74,5 @@
 void FSM_Init(void);
 void FSM_LcdControl(void);
 void FSM_DataControl(void);
-
+void FSM_WifiControl(void);
 #endif

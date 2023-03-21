@@ -1,8 +1,7 @@
 #ifndef __GLOBAL_H__
 #define __GLOBAL_H__
 
-
-// #include <ThingsBoard.h>
+#include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
 #include <PubSubClient.h> 
@@ -31,6 +30,9 @@ extern WiFiClient espClient;
 // Create ThingsBoard instance
 extern PubSubClient client;
 
+// Create web server
+extern ESP8266WebServer WebServer;
+
 // Data receive from sensor, node
 extern Struct_Data_Node _data_node; 
 
@@ -49,7 +51,12 @@ extern unsigned char node_turn_for_lcd_display;
 extern unsigned int _display_time;
 extern unsigned int _time_call_FSM_data;
 
-// flag cho triggering event
+// flag send data to server and send command to node
 extern bool _flag_send_data_sv, _flag_send_data_node;
 
+// flag wifi name and pass selected  in webserver
+extern bool _flag_wf_selected;
+
+// wifi name and pass
+extern String _wifi_name, _wifi_pass;
 #endif

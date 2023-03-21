@@ -2,6 +2,8 @@
 
 WiFiClient espClient = WiFiClient();
 PubSubClient client(espClient);
+ESP8266WebServer WebServer(80);
+
 
 Struct_Data_Node _data_node = {0, 0, 0, 0, false, false};
 Struct_Data_Node _data_lcd_buffer = {0, 30.4, 50.3, 87, false, true};
@@ -18,3 +20,7 @@ unsigned int _display_time = 0;
 unsigned int _time_call_FSM_data = 0;
 
 bool _flag_send_data_sv = false, _flag_send_data_node = 0;
+
+bool _flag_wf_selected = 0;
+
+String _wifi_name = "", _wifi_pass = "";

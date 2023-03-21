@@ -34,7 +34,8 @@ void loop() {
 
     if(_display_time >= 5) _display_time -= 5;
     if(_time_call_FSM_data >= 5) _time_call_FSM_data -= 5;
-
+    
+    FSM_WifiControl();
     FSM_DataControl();
     FSM_LcdControl();
     
@@ -42,5 +43,5 @@ void loop() {
   }
   
   client.loop();
-
+  WebServer.handleClient();
 }

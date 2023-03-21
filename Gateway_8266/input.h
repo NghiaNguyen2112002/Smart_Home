@@ -10,6 +10,8 @@
 #define SW1_PIN       D8
 #define SW2_PIN       D7    
 
+#define BUTTON_CONFIG       0
+#define BUTTON_MODE         1
 void IN_Init(void);
 float IN_ReadHumid(void);
 float IN_ReadTemp(void);

@@ -1,5 +1,6 @@
 #include "wifi.h"
 
+
 // the Wifi radio's status
 int status = WL_IDLE_STATUS;
 
@@ -9,17 +10,9 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len);
 void WF_Init(void){
   WiFi.mode(WIFI_AP_STA);
 
-  Serial.println("Connecting to AP ...");
-  WiFi.begin(WIFI_NAME, WIFI_PASSWORD);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print("*");
-  }
-
   WiFi.softAP(WIFI_GATEWAY_NAME, WIFI_GATEWAY_PASS);
 
-  Serial.print("IP sta: "); Serial.println(WiFi.localIP());
+  // Serial.print("IP sta: "); Serial.println(WiFi.localIP());
   Serial.print("IP ap: "); Serial.println(WiFi.softAPIP());
 
   if (esp_now_init() != 0) {
@@ -43,11 +36,11 @@ void WF_Init(void){
 bool WF_IsConnected(void){
   return WiFi.status() == WL_CONNECTED;
 }
-void WF_Connect(void){
+void WF_Connect(String wifi_name, String wifi_pass){
   if (WiFi.status() != WL_CONNECTED) {
     status = WiFi.status();
     if ( status != WL_CONNECTED) {
-      WiFi.begin(WIFI_NAME, WIFI_PASSWORD);
+      WiFi.begin(wifi_name, wifi_pass);
       while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         Serial.print(".");
@@ -56,6 +49,20 @@ void WF_Connect(void){
     }
   }
 }
+
+void WF_Disconnect(void){
+  WiFi.disconnect();
+}
+
+//=======Webserver for config wifi=========//
+void WF_CreateWebserver(void){
+  WiFi.disconnect();              //ngat ket noi wifi
+  WiFi.softAP(WIFI_GATEWAY_NAME, WIFI_GATEWAY_PASS);
+  Serial.println(WiFi.softAPIP());
+
+  WebServer.begin();
+}
+
 
 //==================SUBFUNCTION=============//
 void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus){
