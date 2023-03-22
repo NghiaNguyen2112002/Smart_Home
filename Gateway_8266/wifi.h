@@ -5,14 +5,13 @@
 #include <ESP8266WiFi.h>
 #include <DNSServer.h>
 #include <WiFiClient.h>
-#include <EEPROM.h>
 #include <ESP8266WebServer.h>
 #include <espnow.h>
 
 #include "global.h"
 #include "MQTT_server.h"
 
-#define WIFI_NAME                 "MANGDAYKTX H1-518"
+#define WIFI_NAME                 "MANGDAYKTX H-518"
 #define WIFI_PASSWORD             "20202024"
 
 #define WIFI_GATEWAY_NAME        "GATEWAY"

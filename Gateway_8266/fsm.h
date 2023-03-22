@@ -3,6 +3,8 @@
 
 #include <Arduino_JSON.h>
 #include <ESP8266WiFi.h>
+#include <EEPROM.h>
+
 // #include <espnow.h>
 
 #include "global.h"
@@ -33,7 +35,7 @@
 // #define INIT                 0
 #define WIFI_CHECKCONNECTION    1
 #define WIFI_CONFIG             2
-
+#define WF_CONNECT              3
 
 //=============LCD SCREEN=============//
 #define SCREEN_INIT_0                   "   SMART HOME   "
@@ -51,7 +53,7 @@
 #define SCREEN_CONFIG_WIFI_0            "  CONFIG  WIFI  "
 #define SCREEN_CONFIG_WIFI_1            "                "   
 
-#define SCREEN_WIFI_CONNECTING_0        "WIFI  CONNECTING"
+#define SCREEN_WIFI_CONNECTING_0        "CONNECTING  WIFI"
 #define SCREEN_WIFI_CONNECTING_1        "                "
 
 // #define SCREEN_WIFI_CONNECTED           " WIFI CONNECTED "

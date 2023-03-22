@@ -1,3 +1,4 @@
+#include "EEPROM.h"
 #include "fsm.h"
 
 unsigned char mode_lcd;
@@ -5,6 +6,7 @@ unsigned char mode_data;
 unsigned char mode_wifi;
 
 void FSM_Init(void){
+
   mode_lcd = INIT;
   mode_data = INIT;
   mode_wifi = INIT;
@@ -39,73 +41,96 @@ void FSM_LcdControl(void){
       LCD_PrintStringBuffer(1, 0, SCREEN_INIT_1);
 
       if(_display_time == 0){
+        LCD_PrintStringBuffer(0, 0, SCREEN_WIFI_CONNECTING_0);
+        LCD_PrintStringBuffer(1, 0, SCREEN_WIFI_CONNECTING_1);
+        mode_lcd = DISPLAY_WIFI_STATE;
+      }
 
+    break;
+    case DISPLAY_WIFI_STATE:
+      if((_counter_time/10) % 4 == 0) LCD_PrintStringBuffer(1, 0, SCREEN_WIFI_CONNECTING_1);
+      LCD_PrintCharBuffer(1, 6 + (_counter_time/10) % 4, '.'); //every 500ms print a '.'
+
+
+      if(WF_IsConnected()){
         LCD_PrintStringBuffer(0, 0, SCREEN_HUMID_TEMP_0);
         LCD_PrintCharBuffer(0, INDEX_CEL_SYMBOL, 0xDF);
         LCD_PrintStringBuffer(1, 0, SCREEN_HUMID_TEMP_1);
-        LCD_PrintCharBuffer(0, INDEX_LCD_NODE, _data_lcd_buffer.node_id + '0');
-        LCD_PrintCharBuffer(1, INDEX_LCD_NODE, _data_lcd_buffer.node_id + '0');
+        LCD_PrintCharBuffer(0, INDEX_LCD_NODE, _data_lcd_buffer[node_turn_for_lcd_display].node_id + '0');
+        LCD_PrintCharBuffer(1, INDEX_LCD_NODE, _data_lcd_buffer[node_turn_for_lcd_display].node_id + '0');
         _display_time = SCREEN_TIME;
         mode_lcd = DISPLAY_DHT;
       }
-      else if(IN_IsPress(BUTTON_CONFIG)) {
+      else if(IN_IsPressed_ms(BUTTON_CONFIG, 2000)) {
         LCD_PrintStringBuffer(0, 0, SCREEN_CONFIG_WIFI_0);
         LCD_PrintStringBuffer(1, 0, SCREEN_CONFIG_WIFI_1);
         mode_lcd = DISPLAY_WF_CONF;
       }
     break;
-    case DISPLAY_WIFI_STATE:
-
-    break;
     case DISPLAY_DHT:
       
-      LCD_PrintFloatBuffer(0, INDEX_TEMP_VALUE, _data_lcd_buffer.temp);
-      LCD_PrintFloatBuffer(1, INDEX_HUMID_VALUE, _data_lcd_buffer.humid);
+      LCD_PrintFloatBuffer(0, INDEX_TEMP_VALUE, _data_lcd_buffer[node_turn_for_lcd_display].temp);
+      LCD_PrintFloatBuffer(1, INDEX_HUMID_VALUE, _data_lcd_buffer[node_turn_for_lcd_display].humid);
 
       if(_display_time == 0){
         LCD_PrintStringBuffer(0, 0, SCREEN_LIGHT_0);
         LCD_PrintStringBuffer(1, 0, SCREEN_LIGHT_1);
-        LCD_PrintCharBuffer(0, INDEX_LCD_NODE, _data_lcd_buffer.node_id + '0');
-        // LCD_PrintCharBuffer(1, INDEX_LCD_NODE, _data_lcd_buffer.node_id + '0'); 
+        LCD_PrintCharBuffer(0, INDEX_LCD_NODE, _data_lcd_buffer[node_turn_for_lcd_display].node_id + '0');
+        // LCD_PrintCharBuffer(1, INDEX_LCD_NODE, _data_lcd_buffer[node_turn_for_lcd_display].node_id + '0'); 
         _display_time = SCREEN_TIME;
         mode_lcd = DISPLAY_LIGHT;
       }
-      else if(IN_IsPress(BUTTON_CONFIG)) {
+      else if(IN_IsPressed_ms(BUTTON_CONFIG, 2000)) {
         LCD_PrintStringBuffer(0, 0, SCREEN_CONFIG_WIFI_0);
         LCD_PrintStringBuffer(1, 0, SCREEN_CONFIG_WIFI_1);
         mode_lcd = DISPLAY_WF_CONF;
+      }
+      else if(!WF_IsConnected()){
+        LCD_PrintStringBuffer(0, 0, SCREEN_WIFI_CONNECTING_0);
+        LCD_PrintStringBuffer(1, 0, SCREEN_WIFI_CONNECTING_1);
+        mode_lcd = DISPLAY_WIFI_STATE;
       }
     break;
     case DISPLAY_LIGHT:
 
-      LCD_PrintNumBuffer(0, INDEX_LIGHT_VALUE, _data_lcd_buffer.light_intensity);
+      LCD_PrintNumBuffer(0, INDEX_LIGHT_VALUE, _data_lcd_buffer[node_turn_for_lcd_display].light_intensity);
 
       if(_display_time == 0){
         LCD_PrintStringBuffer(0, 0, SCREEN_RELAY_0);
         LCD_PrintStringBuffer(1, 0, SCREEN_RELAY_1);
-        LCD_PrintCharBuffer(0, INDEX_LCD_NODE, _data_lcd_buffer.node_id + '0');
-        LCD_PrintCharBuffer(1, INDEX_LCD_NODE, _data_lcd_buffer.node_id + '0');
+        LCD_PrintCharBuffer(0, INDEX_LCD_NODE, _data_lcd_buffer[node_turn_for_lcd_display].node_id + '0');
+        LCD_PrintCharBuffer(1, INDEX_LCD_NODE, _data_lcd_buffer[node_turn_for_lcd_display].node_id + '0');
         _display_time = SCREEN_TIME;
         mode_lcd = DISPLAY_RELAY;
       }
-      else if(IN_IsPress(BUTTON_CONFIG)) {
+      else if(IN_IsPressed_ms(BUTTON_CONFIG, 2000)) {
         LCD_PrintStringBuffer(0, 0, SCREEN_CONFIG_WIFI_0);
         LCD_PrintStringBuffer(1, 0, SCREEN_CONFIG_WIFI_1);
         mode_lcd = DISPLAY_WF_CONF;
+      }
+      else if(!WF_IsConnected()){
+        LCD_PrintStringBuffer(0, 0, SCREEN_WIFI_CONNECTING_0);
+        LCD_PrintStringBuffer(1, 0, SCREEN_WIFI_CONNECTING_1);
+        mode_lcd = DISPLAY_WIFI_STATE;
       }
     break;
     case DISPLAY_RELAY:
 
-      LCD_PrintStringBuffer(0, INDEX_RELAY_STATE, _data_lcd_buffer.status_relay_0 ? LCD_RELAY_STATE_ON : LCD_RELAY_STATE_OFF);
-      LCD_PrintStringBuffer(1, INDEX_RELAY_STATE, _data_lcd_buffer.status_relay_1 ? LCD_RELAY_STATE_ON : LCD_RELAY_STATE_OFF);
+      LCD_PrintStringBuffer(0, INDEX_RELAY_STATE, _data_lcd_buffer[node_turn_for_lcd_display].status_relay_0 ? LCD_RELAY_STATE_ON : LCD_RELAY_STATE_OFF);
+      LCD_PrintStringBuffer(1, INDEX_RELAY_STATE, _data_lcd_buffer[node_turn_for_lcd_display].status_relay_1 ? LCD_RELAY_STATE_ON : LCD_RELAY_STATE_OFF);
 
       if(_display_time == 0){
         mode_lcd = TURN_NEXT_NODE;
       }
-      else if(IN_IsPress(BUTTON_CONFIG)) {
+      if(IN_IsPressed_ms(BUTTON_CONFIG, 2000)) {
         LCD_PrintStringBuffer(0, 0, SCREEN_CONFIG_WIFI_0);
         LCD_PrintStringBuffer(1, 0, SCREEN_CONFIG_WIFI_1);
         mode_lcd = DISPLAY_WF_CONF;
+      }
+      else if(!WF_IsConnected()){
+        LCD_PrintStringBuffer(0, 0, SCREEN_WIFI_CONNECTING_0);
+        LCD_PrintStringBuffer(1, 0, SCREEN_WIFI_CONNECTING_1);
+        mode_lcd = DISPLAY_WIFI_STATE;
       }
     break;
     case TURN_NEXT_NODE:
@@ -115,8 +140,8 @@ void FSM_LcdControl(void){
       LCD_PrintStringBuffer(0, 0, SCREEN_HUMID_TEMP_0);
       LCD_PrintCharBuffer(0, INDEX_CEL_SYMBOL, 0xDF);
       LCD_PrintStringBuffer(1, 0, SCREEN_HUMID_TEMP_1);
-      LCD_PrintCharBuffer(0, INDEX_LCD_NODE, _data_lcd_buffer.node_id + '0');
-      LCD_PrintCharBuffer(1, INDEX_LCD_NODE, _data_lcd_buffer.node_id + '0');  
+      LCD_PrintCharBuffer(0, INDEX_LCD_NODE, _data_lcd_buffer[node_turn_for_lcd_display].node_id + '0');
+      LCD_PrintCharBuffer(1, INDEX_LCD_NODE, _data_lcd_buffer[node_turn_for_lcd_display].node_id + '0');  
       _display_time = SCREEN_TIME;
       mode_lcd = DISPLAY_DHT;
     break;
@@ -126,11 +151,16 @@ void FSM_LcdControl(void){
         LCD_PrintStringBuffer(0, 0, SCREEN_HUMID_TEMP_0);
         LCD_PrintCharBuffer(0, INDEX_CEL_SYMBOL, 0xDF);
         LCD_PrintStringBuffer(1, 0, SCREEN_HUMID_TEMP_1);
-        LCD_PrintCharBuffer(0, INDEX_LCD_NODE, _data_lcd_buffer.node_id + '0');
-        LCD_PrintCharBuffer(1, INDEX_LCD_NODE, _data_lcd_buffer.node_id + '0');
+        LCD_PrintCharBuffer(0, INDEX_LCD_NODE, _data_lcd_buffer[node_turn_for_lcd_display].node_id + '0');
+        LCD_PrintCharBuffer(1, INDEX_LCD_NODE, _data_lcd_buffer[node_turn_for_lcd_display].node_id + '0');
         
         _display_time = SCREEN_TIME;
         mode_lcd = DISPLAY_DHT;
+      }
+      else if(IN_IsPressed(BUTTON_CONFIG)) {
+        LCD_PrintStringBuffer(0, 0, SCREEN_WIFI_CONNECTING_0);
+        LCD_PrintStringBuffer(1, 0, SCREEN_WIFI_CONNECTING_1);
+        mode_lcd = DISPLAY_WIFI_STATE;
       }
     break;
     default: 
@@ -169,9 +199,7 @@ void FSM_DataControl(void){
         SV_SendData(CHANNEL_DATA, (char*)ConvertDataToJsonString().c_str());
 
       // data to lcd_data_buffer
-        if(node_turn_for_lcd_display == _data_node.node_id) {
-            memcpy(&_data_lcd_buffer, &_data_node, sizeof(_data_lcd_buffer));
-        }
+        memcpy(&_data_lcd_buffer[_data_node.node_id], &_data_node, sizeof(_data_lcd_buffer[_data_node.node_id]));
       }
       
       if(_flag_send_data_node){
@@ -194,15 +222,34 @@ void FSM_DataControl(void){
 void FSM_WifiControl(void){
   switch(mode_wifi){
     case INIT:
-      _wifi_name = WIFI_NAME;
-      _wifi_pass = WIFI_PASSWORD;
+      _wifi_name = "";
+      _wifi_pass = "";
 
-      mode_wifi = WIFI_CHECKCONNECTION;
+      for(int i = 0; i < 32; i++){
+        _wifi_name += EEPROM.read(i);             //max wifiname length is 32 char
+        _wifi_pass += EEPROM.read(32 + i);    
+      }
+
+      WF_Connect(_wifi_name, _wifi_pass);
+      mode_wifi = WF_CONNECT;
+    break;
+    case WF_CONNECT:
+      _flag_wf_selected = 0;
+      if(WF_IsConnected()) {
+        mode_wifi = WIFI_CHECKCONNECTION;
+      }
+      else if(IN_IsPressed_ms(BUTTON_CONFIG, 2000)) {
+        WF_Disconnect();
+        WF_CreateWebserver();
+        mode_wifi = WIFI_CONFIG;
+      }
     break;
     case WIFI_CHECKCONNECTION:
-      if(!WF_IsConnected()) WF_Connect(_wifi_name, _wifi_pass);
-
-      if(IN_IsPress(BUTTON_CONFIG)) {
+      if(!WF_IsConnected()) {
+        WF_Connect(_wifi_name, _wifi_pass);
+        mode_wifi = WF_CONNECT;
+      }
+      else if(IN_IsPressed_ms(BUTTON_CONFIG, 2000)) {
         WF_Disconnect();
         WF_CreateWebserver();
         mode_wifi = WIFI_CONFIG;
@@ -210,8 +257,19 @@ void FSM_WifiControl(void){
     break;
     case WIFI_CONFIG:
       if(_flag_wf_selected){
-        
         mode_wifi = WIFI_CHECKCONNECTION;
+      }
+      else if(IN_IsPressed(BUTTON_CONFIG)) {
+        for(int i = 0; i < _wifi_name.length(); i++){
+          EEPROM.write(i, _wifi_name[i]);
+        }
+        for(int i = 0; i < _wifi_pass.length(); i++){
+          EEPROM.write(32 + i, _wifi_pass[i]);
+        }
+        EEPROM.commit();
+
+        WF_Connect(_wifi_name, _wifi_pass);
+        mode_wifi = WF_CONNECT;
       }
     break;
   }

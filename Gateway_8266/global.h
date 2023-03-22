@@ -40,7 +40,7 @@ extern Struct_Data_Node _data_node;
 extern Struct_Command _command;
 
 // Buffer node for lcd display
-extern Struct_Data_Node _data_lcd_buffer;
+extern Struct_Data_Node _data_lcd_buffer[];
 
 // REPLACE WITH THE MAC Address of your receiver 
 extern uint8_t Broadcast_Address[][6];
@@ -59,4 +59,7 @@ extern bool _flag_wf_selected;
 
 // wifi name and pass
 extern String _wifi_name, _wifi_pass;
+
+// auto counter for task needing duration
+extern unsigned char _counter_time;
 #endif
