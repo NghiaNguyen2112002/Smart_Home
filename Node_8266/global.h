@@ -41,5 +41,6 @@ extern uint8_t Broadcast_Address[];
 // flag for triggering evnents
 extern bool _flag_receive_command;
 
+extern unsigned int _time_read_data;
 
 #endif

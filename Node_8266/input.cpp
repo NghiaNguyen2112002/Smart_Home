@@ -1,5 +1,6 @@
 #include "input.h"
 
+unsigned int CounterForButtonPress[] = {0, 0};
 unsigned char BUTTON_PIN[] = {SW1_PIN, SW2_PIN};
 
 DHT dht(DHT_PIN, DHTTYPE);     // Initialize DHT sensor
@@ -41,6 +42,17 @@ unsigned char IN_ReadLight(void){
   return analogRead(ADC_PIN);
 }
 
-unsigned char IN_IsPress(unsigned char index){
-  return digitalRead(BUTTON_PIN[index]);
+bool IN_IsPressed(unsigned char index){
+  return CounterForButtonPress[index] == 2;
+} 
+
+void IN_ButtonReading(void){
+  for(int i = 0; i < NO_OF_BUTTONS; i++){
+    if(digitalRead(BUTTON_PIN[i]) == BUTTON_IS_PRESSED){
+      if(CounterForButtonPress[i] < DURATION_FOR_AUTO_INCREASING){
+        CounterForButtonPress[i]++;
+      }   
+    }
+    else CounterForButtonPress[i] = 0;    
+  }
 }

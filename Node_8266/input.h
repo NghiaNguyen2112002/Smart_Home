@@ -13,7 +13,8 @@ void IN_Init(void);
 float IN_ReadHumid(void);
 float IN_ReadTemp(void);
 unsigned char IN_ReadLight(void);
-unsigned char IN_IsPress(unsigned char index);
+void IN_ButtonReading(void){
+bool IN_IsPress(unsigned char index);
 
 
 #endif

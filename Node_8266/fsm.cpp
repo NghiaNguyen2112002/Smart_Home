@@ -18,8 +18,24 @@ void FSM_DataProcessing(void){
       WF_Reconnect();
       mode = READ_DATA;
     break;
+    case IDLING:
+      if(_time_read_data == 0){
+        _time_read_data = TIME_READ_DATA;
+        mode = READ_DATA;
+      }
+      else if(_flag_receive_command){
+        mode = RECEIVED_CMD;
+      }
+      else if(IN_IsPress(0)){
+        OUT_TuggleRelay(0);
+        mode = READ_DATA;
+      }
+      else if(IN_IsPress(1));
+        OUT_TuggleRelay(1);
+        mode = READ_DATA;
+      }
+    break;
     case READ_DATA:
-    
       _data_node.status_relay_0 = OUT_IsRelayOn(0);
       _data_node.status_relay_1 = OUT_IsRelayOn(1);
       _data_node.humid = IN_ReadHumid();
@@ -29,11 +45,19 @@ void FSM_DataProcessing(void){
       if(WF_IsConnected()) mode = SEND_DATA;
       else mode = CONNECT_WIFI;
     break;
-    case SEND_DATA:
+    case SEND_DATA:    
       _data_node.node_id = NODE_ID;
       esp_now_send(Broadcast_Address, (uint8_t *) &_data_node, sizeof(_data_node));
-      mode = READ_DATA;
+      mode = IDLING;
+      
     break;
-
+    case RECEIVED_CMD:
+      if(_command.value == 1){
+        OUT_TurnRelayOn(_command.actuator_index);
+      }
+      else if(_command.value == 0){
+        OUT_TurnRelayOff(_command.actuator_index);
+      }
+    break;
   }
 }

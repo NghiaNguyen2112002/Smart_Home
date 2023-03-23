@@ -76,12 +76,6 @@ void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus){
 }
 void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len){
     memcpy(&_command, incomingData, sizeof(_command));
-
-    if(_command.value == 1){
-      OUT_TurnRelayOn(_command.actuator_index);
-    }
-    else if(_command.value == 0){
-      OUT_TurnRelayOff(_command.actuator_index);
-    }
+    _flag_receive_command = true;
 }
 

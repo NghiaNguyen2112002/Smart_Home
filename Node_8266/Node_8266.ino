@@ -20,13 +20,17 @@ void setup() {
   OUT_Init();
   TMR1_Init(50);
   
-  TMR1_SetTime_ms(1000); 
+  TMR1_SetTime_ms(50); 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   if(timer1_flag){
     timer1_flag = 0;
+
+    IN_ButtonReading();
+
+    if(_time_read_data > 5) _time_read_data -= 5;
 
     FSM_DataProcessing();
   }
