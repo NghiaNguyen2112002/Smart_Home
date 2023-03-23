@@ -12,11 +12,21 @@ void FSM_DataProcessing(void){
   switch(mode){
     case INIT:
       if(WF_IsConnected()) mode = READ_DATA;
-      else mode = CONNECT_WIFI;
+      else {
+        WF_Reconnect();
+        mode = CONNECT_WIFI;
+      }
     break;
     case CONNECT_WIFI:
-      WF_Reconnect();
-      mode = READ_DATA;
+      // if(IN_IsPressed(0)){
+      //   OUT_TuggleRelay(0);
+      //   mode = READ_DATA;
+      // }
+      // else if(IN_IsPressed(1)){
+      //   OUT_TuggleRelay(1);
+      //   mode = READ_DATA;
+      // }
+      if(WF_IsConnected()) mode = IDLING;
     break;
     case IDLING:
       if(_time_read_data == 0){
@@ -43,7 +53,11 @@ void FSM_DataProcessing(void){
       _data_node.light_intensity = IN_ReadLight();
 
       if(WF_IsConnected()) mode = SEND_DATA;
-      else mode = CONNECT_WIFI;
+      else {
+        WF_Reconnect();
+        mode = CONNECT_WIFI;
+      }
+
     break;
     case SEND_DATA:    
       _data_node.node_id = NODE_ID;

@@ -30,7 +30,7 @@ void loop() {
 
     IN_ButtonReading();
 
-    if(_time_read_data > 5) _time_read_data -= 5;
+    if(_time_read_data >= 5) _time_read_data -= 5;
 
     FSM_DataProcessing();
   }

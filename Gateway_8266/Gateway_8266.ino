@@ -18,7 +18,7 @@
 void setup() {
   // put your setup code here, to run once:
 
-  EEPROM.begin(512);
+  // EEPROM.begin(512);
 
   Serial.begin(SERIAL_DEBUG_BAUD);
   WF_Init();

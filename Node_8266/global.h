@@ -7,8 +7,7 @@
 #include <ArduinoJson.h>
 #include <espnow.h>
 
-#define NODE_ID             1
-
+#define NODE_ID             2
 
 typedef struct Struct_Command{
   unsigned char node_id;

@@ -12,10 +12,10 @@ void WF_Init(void){
   Serial.println("Connecting to AP ...");
   WiFi.begin(WIFI_NAME, WIFI_PASSWORD);
 
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print("*");
-  }
+  // while (WiFi.status() != WL_CONNECTED) {
+  //   delay(500);
+  //   Serial.print("*");
+  // }
 
   Serial.print("IP sta: "); Serial.println(WiFi.localIP());
 
@@ -42,11 +42,11 @@ void WF_Reconnect() {
   status = WiFi.status();
   if ( status != WL_CONNECTED) {
     WiFi.begin(WIFI_NAME, WIFI_PASSWORD);
-    while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
-    }
-    Serial.println("Connected to AP");
+    // while (WiFi.status() != WL_CONNECTED) {
+    //   delay(500);
+    //   Serial.print(".");
+    // }
+    // Serial.println("Connected to AP");
   }
 }
 

@@ -7,7 +7,7 @@ void TMR1_Init(uint32_t period_ms){
   timer1_disable();
 
   timer1_period = period_ms;
-  timer1_value = timer1_period *  5000 ;            //1000ms     -   5000000 cycle
+  timer1_value = timer1_period *  1250 ;            //1000ms     -   1 250 000 cycle  ???????
                                                     //period_ms  -      ?
   timer1_isr_init();
   timer1_attachInterrupt(TMR1_Isr);

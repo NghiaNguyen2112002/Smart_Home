@@ -1,6 +1,8 @@
 #include "wifi.h"
 
 String list_wf;
+// the Wifi radio's status
+int status = WL_IDLE_STATUS;
 
 void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus);
 void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len);
@@ -9,7 +11,7 @@ String MakePage(String title, String contents);
 
 void WF_Init(void){
   WiFi.mode(WIFI_AP_STA);
-
+  WiFi.disconnect();
   WiFi.softAP(WIFI_GATEWAY_NAME, WIFI_GATEWAY_PASS);
 
   // Serial.print("IP sta: "); Serial.println(WiFi.localIP());
@@ -38,7 +40,7 @@ bool WF_IsConnected(void){
 }
 void WF_Connect(String wifi_name, String wifi_pass){
   if (WiFi.status() != WL_CONNECTED) {
-    WiFi.begin(wifi_name.c_str(), wifi_pass.c_str());
+    WiFi.begin(wifi_name, wifi_pass);
   }
 }
 
@@ -65,10 +67,10 @@ void WF_CreateWebserver(void){
   }
 
   WebServer.on("/", [](){
-    String s = "<h1>Wi-Fi Configuration.</h1>";
+    String s = "<h1>Wi-Fi Configuration</h1>";
       s += "<form method='get' action='setap'><label>SSID: </label><select name='wf_name'>";
       s += list_wf;
-      s += "<label>Password: </label><input name='pass' length=64 type='passwod'>";
+      s += "Password: <input name='pass' length=64 type='passwod'>";
       s += "<input type='submit'>";
     WebServer.send(200, "text/html", MakePage("Wifi Configuration", s));  
   });

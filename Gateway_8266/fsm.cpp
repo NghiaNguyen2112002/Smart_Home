@@ -146,22 +146,12 @@ void FSM_LcdControl(void){
       mode_lcd = DISPLAY_DHT;
     break;
     case DISPLAY_WF_CONF:
-      if(_flag_wf_selected){
-
-        LCD_PrintStringBuffer(0, 0, SCREEN_HUMID_TEMP_0);
-        LCD_PrintCharBuffer(0, INDEX_CEL_SYMBOL, 0xDF);
-        LCD_PrintStringBuffer(1, 0, SCREEN_HUMID_TEMP_1);
-        LCD_PrintCharBuffer(0, INDEX_LCD_NODE, _data_lcd_buffer[node_turn_for_lcd_display].node_id + '0');
-        LCD_PrintCharBuffer(1, INDEX_LCD_NODE, _data_lcd_buffer[node_turn_for_lcd_display].node_id + '0');
-        
-        _display_time = SCREEN_TIME;
-        mode_lcd = DISPLAY_DHT;
-      }
-      else if(IN_IsPressed(BUTTON_CONFIG)) {
+      if(_flag_wf_selected || IN_IsPressed(BUTTON_CONFIG)){
         LCD_PrintStringBuffer(0, 0, SCREEN_WIFI_CONNECTING_0);
         LCD_PrintStringBuffer(1, 0, SCREEN_WIFI_CONNECTING_1);
         mode_lcd = DISPLAY_WIFI_STATE;
       }
+
     break;
     default: 
       mode_lcd = INIT;
@@ -176,7 +166,7 @@ void FSM_DataControl(void){
       _data_node.node_id = 0;
       _data_node.humid = IN_ReadHumid();
       _data_node.temp = IN_ReadTemp();
-      // _data_node.light_intensity = IN_ReadLight();
+      _data_node.light_intensity = IN_ReadLight();
 
       // gateway does not have relays
       _data_node.status_relay_0 = false;
@@ -188,7 +178,7 @@ void FSM_DataControl(void){
       else mode_data = CHECK_CONNECTION;
     break;
     case CHECK_CONNECTION:
-      if(!SV_IsConnected()) SV_Connect();
+      if(WF_IsConnected() && !SV_IsConnected()) SV_Connect();
 
       if(SV_IsConnected()) mode_data = TRANSFER_DATA;
     break;
@@ -199,19 +189,20 @@ void FSM_DataControl(void){
         SV_SendData(CHANNEL_DATA, (char*)ConvertDataToJsonString().c_str());
 
       // data to lcd_data_buffer
-        memcpy(&_data_lcd_buffer[_data_node.node_id], &_data_node, sizeof(_data_lcd_buffer[_data_node.node_id]));
+        // memcpy(&_data_lcd_buffer[_data_node.node_id], &_data_node, sizeof(_data_lcd_buffer[_data_node.node_id]));
       }
       
       if(_flag_send_data_node){
         _flag_send_data_node = false;
       // when receive command from server, gateway send to node through espnow
         esp_now_send(Broadcast_Address[_command.node_id - 1], (uint8_t*) &_command, sizeof(_command));
+        memcpy(&_data_lcd_buffer[(int)_data_node.node_id], &_data_node, sizeof(_data_lcd_buffer[(int)_data_node.node_id]));
       }
 
       if(_time_call_FSM_data < 5){
         _time_call_FSM_data = FSM_DATA_CONTROL_TIME;
         mode_data = READ_DATA_GATEWAY;
-      } 
+      }
     break;
     default: 
       mode_data = INIT;
@@ -222,19 +213,20 @@ void FSM_DataControl(void){
 void FSM_WifiControl(void){
   switch(mode_wifi){
     case INIT:
-      _wifi_name = "";
-      _wifi_pass = "";
+      _wifi_name = WIFI_NAME;
+      _wifi_pass = WIFI_PASSWORD;
 
-      for(int i = 0; i < 32; i++){
-        if(EEPROM.read(i) > 0) _wifi_name += char(EEPROM.read(i));
-        if(EEPROM.read(32 + i) > 0) _wifi_pass += char(EEPROM.read(32 + i));
-      }
+      // EEPROM.get(0, _wifi_name);
+      // for(int i = 0; i < 32; i++){
+      //   if(EEPROM.read(i) > 0) _wifi_name += char(EEPROM.read(i));
+      //   if(EEPROM.read(32 + i) > 0) _wifi_pass += char(EEPROM.read(32 + i));
+      // }
       Serial.println(_wifi_name + " " + _wifi_pass);
       WF_Connect(_wifi_name, _wifi_pass);
       mode_wifi = WF_CONNECT;
     break;
     case WF_CONNECT:
-      _flag_wf_selected = 0;
+      _flag_wf_selected = false;
       if(WF_IsConnected()) {
         mode_wifi = WIFI_CHECKCONNECTION;
       }
@@ -257,16 +249,18 @@ void FSM_WifiControl(void){
     break;
     case WIFI_CONFIG:
       if(_flag_wf_selected){
-        for (int i = 0; i < 64; i++) {
-          EEPROM.write(i, 0);               //clear EEPROM
-        }
-        for(int i = 0; i < _wifi_name.length(); i++){
-          EEPROM.write(i, _wifi_name[i]);
-        }
-        for(int i = 0; i < _wifi_pass.length(); i++){
-          EEPROM.write(32 + i, _wifi_pass[i]);
-        }
-        EEPROM.commit();
+        // for (uint8_t i = 0; i < 64; i++) {
+        //   EEPROM.write(i, 0);               //clear EEPROM
+        // }
+        // for(int i = 0; i < (int)_wifi_name.length(); i++){
+        //   EEPROM.put(i, _wifi_name);
+        // }
+        // for(int i = 0; i < (int)_wifi_pass.length(); i++){
+        //   EEPROM.write(32 + i, _wifi_pass[i]);
+        // }
+        Serial.println(_wifi_name);
+        Serial.println(_wifi_pass);
+        // EEPROM.commit(); 
         mode_wifi = WIFI_CHECKCONNECTION;
       }
       else if(IN_IsPressed(BUTTON_CONFIG)) {

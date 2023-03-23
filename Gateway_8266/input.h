@@ -15,7 +15,7 @@
 #define BUTTON_IS_PRESSED     0
 #define BUTTON_IS_RELEASED    1
 
-#define DURATION_FOR_AUTO_INCREASING        1000      //10s
+#define DURATION_FOR_AUTO_INCREASING        1000      //50s
 
 #define BUTTON_CONFIG       0
 #define BUTTON_MODE         1

@@ -11,8 +11,8 @@
 #include "global.h"
 #include "MQTT_server.h"
 
-#define WIFI_NAME                 "MANGDAYKTX H-518"
-#define WIFI_PASSWORD             "20202024"
+#define WIFI_NAME                 "Holmes211"
+#define WIFI_PASSWORD             "0906631096"
 
 #define WIFI_GATEWAY_NAME        "GATEWAY"
 #define WIFI_GATEWAY_PASS        "123456789"
