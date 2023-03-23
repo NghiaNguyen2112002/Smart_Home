@@ -15,7 +15,7 @@ void SV_Connect(void){
 
         // Subscribing channel
         client.subscribe(CHANNEL_COMMAND);
-      } 
+      }
       else {
         Serial.print( "[FAILED] [ rc = " );
         Serial.println( client.state() );

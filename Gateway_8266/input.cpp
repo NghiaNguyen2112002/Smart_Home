@@ -59,5 +59,5 @@ bool IN_IsPressed(unsigned char index){
 
 bool IN_IsPressed_ms(unsigned char index, unsigned int duration){
     if(index >= NO_OF_BUTTONS) return 0;
-    return CounterForButtonPress[index] >  (duration / 50);       //button is scaned every 50ms
+    return CounterForButtonPress[index] ==  (duration / 50);       //button is scaned every 50ms
 }

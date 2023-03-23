@@ -38,7 +38,7 @@ bool WF_IsConnected(void){
 }
 void WF_Connect(String wifi_name, String wifi_pass){
   if (WiFi.status() != WL_CONNECTED) {
-    WiFi.begin(wifi_name, wifi_pass);
+    WiFi.begin(wifi_name.c_str(), wifi_pass.c_str());
   }
 }
 
@@ -68,7 +68,7 @@ void WF_CreateWebserver(void){
     String s = "<h1>Wi-Fi Configuration.</h1>";
       s += "<form method='get' action='setap'><label>SSID: </label><select name='wf_name'>";
       s += list_wf;
-      s += "Password: <input name='pass' length=64 type='passwod'>";
+      s += "<label>Password: </label><input name='pass' length=64 type='passwod'>";
       s += "<input type='submit'>";
     WebServer.send(200, "text/html", MakePage("Wifi Configuration", s));  
   });

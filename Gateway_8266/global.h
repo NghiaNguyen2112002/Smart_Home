@@ -57,6 +57,9 @@ extern bool _flag_send_data_sv, _flag_send_data_node;
 // flag wifi name and pass selected  in webserver
 extern bool _flag_wf_selected;
 
+// flag for mode view lcd
+extern bool _flag_special_mode_lcd;
+
 // wifi name and pass
 extern String _wifi_name, _wifi_pass;
 

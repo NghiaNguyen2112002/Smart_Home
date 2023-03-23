@@ -48,9 +48,9 @@ void FSM_LcdControl(void){
 
     break;
     case DISPLAY_WIFI_STATE:
-      if((_counter_time/10) % 4 == 0) LCD_PrintStringBuffer(1, 0, SCREEN_WIFI_CONNECTING_1);
-      LCD_PrintCharBuffer(1, 6 + (_counter_time/10) % 4, '.'); //every 500ms print a '.'
 
+      LCD_PrintCharBuffer(1, 6 + (_counter_time/10) % 5, '.'); //every 500ms print a '.'
+      if((_counter_time/10) % 5 == 4) LCD_PrintStringBuffer(1, 0, SCREEN_WIFI_CONNECTING_1);
 
       if(WF_IsConnected()){
         LCD_PrintStringBuffer(0, 0, SCREEN_HUMID_TEMP_0);
@@ -226,10 +226,10 @@ void FSM_WifiControl(void){
       _wifi_pass = "";
 
       for(int i = 0; i < 32; i++){
-        _wifi_name += EEPROM.read(i);             //max wifiname length is 32 char
-        _wifi_pass += EEPROM.read(32 + i);    
+        if(EEPROM.read(i) > 0) _wifi_name += char(EEPROM.read(i));
+        if(EEPROM.read(32 + i) > 0) _wifi_pass += char(EEPROM.read(32 + i));
       }
-
+      Serial.println(_wifi_name + " " + _wifi_pass);
       WF_Connect(_wifi_name, _wifi_pass);
       mode_wifi = WF_CONNECT;
     break;
@@ -257,9 +257,9 @@ void FSM_WifiControl(void){
     break;
     case WIFI_CONFIG:
       if(_flag_wf_selected){
-        mode_wifi = WIFI_CHECKCONNECTION;
-      }
-      else if(IN_IsPressed(BUTTON_CONFIG)) {
+        for (int i = 0; i < 64; i++) {
+          EEPROM.write(i, 0);               //clear EEPROM
+        }
         for(int i = 0; i < _wifi_name.length(); i++){
           EEPROM.write(i, _wifi_name[i]);
         }
@@ -267,7 +267,9 @@ void FSM_WifiControl(void){
           EEPROM.write(32 + i, _wifi_pass[i]);
         }
         EEPROM.commit();
-
+        mode_wifi = WIFI_CHECKCONNECTION;
+      }
+      else if(IN_IsPressed(BUTTON_CONFIG)) {
         WF_Connect(_wifi_name, _wifi_pass);
         mode_wifi = WF_CONNECT;
       }

@@ -25,5 +25,6 @@ unsigned int _time_call_FSM_data = 0;
 bool _flag_send_data_sv = false, _flag_send_data_node = 0;
 
 bool _flag_wf_selected = 0;
+bool _flag_special_mode_lcd = 0;
 
 String _wifi_name = "", _wifi_pass = "";
