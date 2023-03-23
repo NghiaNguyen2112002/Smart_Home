@@ -26,11 +26,11 @@ void FSM_DataProcessing(void){
       else if(_flag_receive_command){
         mode = RECEIVED_CMD;
       }
-      else if(IN_IsPress(0)){
+      else if(IN_IsPressed(0)){
         OUT_TuggleRelay(0);
         mode = READ_DATA;
       }
-      else if(IN_IsPress(1));
+      else if(IN_IsPressed(1)){
         OUT_TuggleRelay(1);
         mode = READ_DATA;
       }
